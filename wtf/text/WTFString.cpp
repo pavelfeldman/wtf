@@ -347,34 +347,6 @@ String String::substring(unsigned pos, unsigned len) const
     return m_impl->substring(pos, len);
 }
 
-String String::lower() const
-{
-    if (!m_impl)
-        return String();
-    return m_impl->lower();
-}
-
-String String::upper() const
-{
-    if (!m_impl)
-        return String();
-    return m_impl->upper();
-}
-
-String String::lower(const AtomicString& localeIdentifier) const
-{
-    if (!m_impl)
-        return String();
-    return m_impl->lower(localeIdentifier);
-}
-
-String String::upper(const AtomicString& localeIdentifier) const
-{
-    if (!m_impl)
-        return String();
-    return m_impl->upper(localeIdentifier);
-}
-
 String String::stripWhiteSpace() const
 {
     if (!m_impl)
@@ -408,13 +380,6 @@ String String::removeCharacters(CharacterMatchFunctionPtr findMatch) const
     if (!m_impl)
         return String();
     return m_impl->removeCharacters(findMatch);
-}
-
-String String::foldCase() const
-{
-    if (!m_impl)
-        return String();
-    return m_impl->foldCase();
 }
 
 Vector<UChar> String::charactersWithNullTermination() const

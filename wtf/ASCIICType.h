@@ -69,11 +69,6 @@ template<typename CharType> inline bool isASCIIHexDigit(CharType c)
     return isASCIIDigit(c) || ((c | 0x20) >= 'a' && (c | 0x20) <= 'f');
 }
 
-template<typename CharType> inline bool isASCIILower(CharType c)
-{
-    return c >= 'a' && c <= 'z';
-}
-
 template<typename CharType> inline bool isASCIIOctalDigit(CharType c)
 {
     return (c >= '0') & (c <= '7');
@@ -102,47 +97,7 @@ template<typename CharType> inline bool isASCIISpace(CharType c)
     return c <= ' ' && (c == ' ' || (c <= 0xD && c >= 0x9));
 }
 
-template<typename CharType> inline bool isASCIIUpper(CharType c)
-{
-    return c >= 'A' && c <= 'Z';
-}
-
 WTF_EXPORT extern const LChar ASCIICaseFoldTable[256];
-
-template<typename CharType> inline CharType toASCIILower(CharType c)
-{
-#if defined(_MSC_FULL_VER) && _MSC_FULL_VER == 170060610
-    // Make a workaround for VS2012 update 3 optimizer bug, remove once VS2012 fix it.
-    return (c >= 'A' && c <= 'Z') ? c + 0x20 : c;
-#else
-    return c | ((c >= 'A' && c <= 'Z') << 5);
-#endif
-}
-
-inline LChar toASCIILower(LChar c)
-{
-    return ASCIICaseFoldTable[c];
-}
-
-inline char toASCIILower(char c)
-{
-    return static_cast<char>(ASCIICaseFoldTable[static_cast<LChar>(c)]);
-}
-
-template<typename CharType> inline CharType toASCIILowerUnchecked(CharType character)
-{
-    // This function can be used for comparing any input character
-    // to a lowercase English character. The isASCIIAlphaCaselessEqual
-    // below should be used for regular comparison of ASCII alpha
-    // characters, but switch statements in CSS tokenizer require
-    // direct use of this function.
-    return character | 0x20;
-}
-
-template<typename CharType> inline CharType toASCIIUpper(CharType c)
-{
-    return c & ~((c >= 'a' && c <= 'z') << 5);
-}
 
 template<typename CharType> inline int toASCIIHexValue(CharType c)
 {
@@ -183,15 +138,10 @@ using WTF::isASCIIAlpha;
 using WTF::isASCIIAlphanumeric;
 using WTF::isASCIIDigit;
 using WTF::isASCIIHexDigit;
-using WTF::isASCIILower;
 using WTF::isASCIIOctalDigit;
 using WTF::isASCIIPrintable;
 using WTF::isASCIISpace;
-using WTF::isASCIIUpper;
 using WTF::toASCIIHexValue;
-using WTF::toASCIILower;
-using WTF::toASCIILowerUnchecked;
-using WTF::toASCIIUpper;
 using WTF::lowerNibbleToASCIIHexDigit;
 using WTF::upperNibbleToASCIIHexDigit;
 using WTF::isASCIIAlphaCaselessEqual;

@@ -449,30 +449,6 @@ void AtomicString::remove(StringImpl* r)
     atomicStrings().remove(iterator);
 }
 
-AtomicString AtomicString::lower() const
-{
-    // Note: This is a hot function in the Dromaeo benchmark.
-    StringImpl* impl = this->impl();
-    if (UNLIKELY(!impl))
-        return *this;
-    RefPtr<StringImpl> newImpl = impl->lower();
-    if (LIKELY(newImpl == impl))
-        return *this;
-    return AtomicString(newImpl.release());
-}
-
-AtomicString AtomicString::lowerASCII() const
-{
-    StringImpl* impl = this->impl();
-    if (UNLIKELY(!impl))
-        return *this;
-    RefPtr<StringImpl> newImpl = impl->lowerASCII();
-    if (LIKELY(newImpl == impl))
-        return *this;
-    return AtomicString(newImpl.release());
-}
-
-
 AtomicString AtomicString::fromUTF8Internal(const char* charactersStart, const char* charactersEnd)
 {
     HashAndUTF8Characters buffer;

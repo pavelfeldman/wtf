@@ -345,15 +345,7 @@ public:
     double toDouble(bool* ok = 0);
     float toFloat(bool* ok = 0);
 
-    PassRefPtr<StringImpl> lower();
-    PassRefPtr<StringImpl> lowerASCII();
-    PassRefPtr<StringImpl> upper();
-    PassRefPtr<StringImpl> lower(const AtomicString& localeIdentifier);
-    PassRefPtr<StringImpl> upper(const AtomicString& localeIdentifier);
-
     PassRefPtr<StringImpl> fill(UChar);
-    // FIXME: Do we need fill(char) or can we just do the right thing if UChar is ASCII?
-    PassRefPtr<StringImpl> foldCase();
 
     PassRefPtr<StringImpl> stripWhiteSpace();
     PassRefPtr<StringImpl> stripWhiteSpace(IsWhiteSpaceFunctionPtr);
@@ -372,10 +364,6 @@ public:
     ALWAYS_INLINE size_t find(const char* s, unsigned index = 0) { return find(reinterpret_cast<const LChar*>(s), index); }
     size_t find(StringImpl*);
     size_t find(StringImpl*, unsigned index);
-    size_t findIgnoringCase(const LChar*, unsigned index = 0);
-    ALWAYS_INLINE size_t findIgnoringCase(const char* s, unsigned index = 0) { return findIgnoringCase(reinterpret_cast<const LChar*>(s), index); }
-    size_t findIgnoringCase(StringImpl*, unsigned index = 0);
-    size_t findIgnoringASCIICase(StringImpl*, unsigned index = 0);
 
     size_t findNextLineStart(unsigned index = UINT_MAX);
 
@@ -387,18 +375,10 @@ public:
     bool startsWith(UChar) const;
     bool startsWith(const char*, unsigned prefixLength) const;
     bool startsWith(const StringImpl*) const;
-    bool startsWithIgnoringCase(const char*, unsigned prefixLength) const;
-    bool startsWithIgnoringCase(const StringImpl*) const;
-    bool startsWithIgnoringASCIICase(const char*, unsigned prefixLength) const;
-    bool startsWithIgnoringASCIICase(const StringImpl*) const;
 
     bool endsWith(UChar) const;
     bool endsWith(const char*, unsigned suffixLength) const;
     bool endsWith(const StringImpl*) const;
-    bool endsWithIgnoringCase(const char*, unsigned suffixLength) const;
-    bool endsWithIgnoringCase(const StringImpl*) const;
-    bool endsWithIgnoringASCIICase(const char*, unsigned suffixLength) const;
-    bool endsWithIgnoringASCIICase(const StringImpl*) const;
 
     PassRefPtr<StringImpl> replace(UChar, UChar);
     PassRefPtr<StringImpl> replace(UChar, StringImpl*);
@@ -484,37 +464,6 @@ ALWAYS_INLINE bool equal(const LChar* a, const UChar* b, unsigned length)
 }
 
 ALWAYS_INLINE bool equal(const UChar* a, const LChar* b, unsigned length) { return equal(b, a, length); }
-
-WTF_EXPORT bool equalIgnoringCase(const StringImpl*, const StringImpl*);
-WTF_EXPORT bool equalIgnoringCase(const StringImpl*, const LChar*);
-inline bool equalIgnoringCase(const LChar* a, const StringImpl* b) { return equalIgnoringCase(b, a); }
-WTF_EXPORT bool equalIgnoringCase(const LChar*, const LChar*, unsigned);
-WTF_EXPORT bool equalIgnoringCase(const UChar*, const LChar*, unsigned);
-inline bool equalIgnoringCase(const UChar* a, const char* b, unsigned length) { return equalIgnoringCase(a, reinterpret_cast<const LChar*>(b), length); }
-inline bool equalIgnoringCase(const LChar* a, const UChar* b, unsigned length) { return equalIgnoringCase(b, a, length); }
-inline bool equalIgnoringCase(const char* a, const UChar* b, unsigned length) { return equalIgnoringCase(b, reinterpret_cast<const LChar*>(a), length); }
-inline bool equalIgnoringCase(const char* a, const LChar* b, unsigned length) { return equalIgnoringCase(b, reinterpret_cast<const LChar*>(a), length); }
-inline bool equalIgnoringCase(const UChar* a, const UChar* b, int length)
-{
-    ASSERT(length >= 0);
-    return !Unicode::umemcasecmp(a, b, length);
-}
-WTF_EXPORT bool equalIgnoringCaseNonNull(const StringImpl*, const StringImpl*);
-
-WTF_EXPORT bool equalIgnoringNullity(StringImpl*, StringImpl*);
-
-template<typename CharacterTypeA, typename CharacterTypeB>
-inline bool equalIgnoringASCIICase(const CharacterTypeA* a, const CharacterTypeB* b, unsigned length)
-{
-    for (unsigned i = 0; i < length; ++i) {
-        if (toASCIILower(a[i]) != toASCIILower(b[i]))
-            return false;
-    }
-    return true;
-}
-
-WTF_EXPORT bool equalIgnoringASCIICase(const StringImpl*, const StringImpl*);
-WTF_EXPORT bool equalIgnoringASCIICase(const StringImpl*, const LChar*);
 
 template<typename CharacterType>
 inline size_t find(const CharacterType* characters, unsigned length, CharacterType matchCharacter, unsigned index = 0)
@@ -660,18 +609,6 @@ inline unsigned lengthOfNullTerminatedString(const UChar* string)
     return static_cast<unsigned>(length);
 }
 
-template<size_t inlineCapacity>
-bool equalIgnoringNullity(const Vector<UChar, inlineCapacity>& a, StringImpl* b)
-{
-    if (!b)
-        return !a.size();
-    if (a.size() != b->length())
-        return false;
-    if (b->is8Bit())
-        return equal(a.data(), b->characters8(), b->length());
-    return equal(a.data(), b->characters16(), b->length());
-}
-
 template<typename CharacterType1, typename CharacterType2>
 static inline int codePointCompare(unsigned l1, unsigned l2, const CharacterType1* c1, const CharacterType2* c2)
 {
@@ -740,10 +677,6 @@ inline PassRefPtr<StringImpl> StringImpl::isolatedCopy() const
         return create(characters8(), m_length);
     return create(characters16(), m_length);
 }
-
-// TODO(rob.buis) possibly find a better place for this method.
-// Turns a UChar32 to uppercase based on localeIdentifier.
-WTF_EXPORT UChar32 toUpper(UChar32, const AtomicString& localeIdentifier);
 
 struct StringHash;
 

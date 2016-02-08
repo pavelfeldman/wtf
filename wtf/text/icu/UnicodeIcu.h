@@ -114,45 +114,6 @@ enum CharCategory {
     Punctuation_FinalQuote = U_MASK(U_FINAL_PUNCTUATION)
 };
 
-inline UChar32 foldCase(UChar32 c)
-{
-    return u_foldCase(c, U_FOLD_CASE_DEFAULT);
-}
-
-inline int foldCase(UChar* result, int resultLength, const UChar* src, int srcLength, bool* error)
-{
-    UErrorCode status = U_ZERO_ERROR;
-    int realLength = u_strFoldCase(result, resultLength, src, srcLength, U_FOLD_CASE_DEFAULT, &status);
-    *error = !U_SUCCESS(status);
-    return realLength;
-}
-
-inline int toLower(UChar* result, int resultLength, const UChar* src, int srcLength, bool* error)
-{
-    UErrorCode status = U_ZERO_ERROR;
-    int realLength = u_strToLower(result, resultLength, src, srcLength, "", &status);
-    *error = !!U_FAILURE(status);
-    return realLength;
-}
-
-inline UChar32 toLower(UChar32 c)
-{
-    return u_tolower(c);
-}
-
-inline UChar32 toUpper(UChar32 c)
-{
-    return u_toupper(c);
-}
-
-inline int toUpper(UChar* result, int resultLength, const UChar* src, int srcLength, bool* error)
-{
-    UErrorCode status = U_ZERO_ERROR;
-    int realLength = u_strToUpper(result, resultLength, src, srcLength, "", &status);
-    *error = !!U_FAILURE(status);
-    return realLength;
-}
-
 inline UChar32 toTitleCase(UChar32 c)
 {
     return u_totitle(c);
@@ -201,11 +162,6 @@ inline CharCategory category(UChar32 c)
 inline CharDirection direction(UChar32 c)
 {
     return static_cast<CharDirection>(u_charDirection(c));
-}
-
-inline bool isLower(UChar32 c)
-{
-    return !!u_islower(c);
 }
 
 inline uint8_t combiningClass(UChar32 c)

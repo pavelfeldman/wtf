@@ -28,7 +28,6 @@
 #include "wtf/Allocator.h"
 #include "wtf/HashTableDeletedValueType.h"
 #include "wtf/WTFExport.h"
-#include "wtf/testing/WTFUnitTestHelpersExport.h"
 #include "wtf/text/ASCIIFastPath.h"
 #include "wtf/text/StringImpl.h"
 #include "wtf/text/StringView.h"
@@ -88,10 +87,7 @@ enum UTF8ConversionMode {
     StrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
 };
 
-#define DISPATCH_CASE_OP(caseSensitivity, op, args)                     \
-    ((caseSensitivity == TextCaseSensitive) ? op args :                 \
-     (caseSensitivity == TextCaseASCIIInsensitive) ? op##IgnoringASCIICase args : \
-     op##IgnoringCase args)
+#define DISPATCH_CASE_OP(caseSensitivity, op, args) (op args)
 
 template<bool isSpecialCharacter(UChar), typename CharacterType>
 bool isAllSpecialCharacters(const CharacterType*, size_t);
@@ -235,16 +231,6 @@ public:
     size_t reverseFind(const String& str, unsigned start = UINT_MAX) const
         { return m_impl ? m_impl->reverseFind(str.impl(), start) : kNotFound; }
 
-    // Case insensitive string matching.
-    size_t findIgnoringCase(const LChar* str, unsigned start = 0) const
-        { return m_impl ? m_impl->findIgnoringCase(str, start) : kNotFound; }
-    size_t findIgnoringCase(const String& str, unsigned start = 0) const
-        { return m_impl ? m_impl->findIgnoringCase(str.impl(), start) : kNotFound; }
-
-    // ASCII case insensitive string matching.
-    size_t findIgnoringASCIICase(const String& str, unsigned start = 0) const
-        { return m_impl ? m_impl->findIgnoringASCIICase(str.impl(), start) : kNotFound; }
-
     // Wrappers for find adding dynamic sensitivity check.
     size_t find(const LChar* str, unsigned start, TextCaseSensitivity caseSensitivity) const
         { return DISPATCH_CASE_OP(caseSensitivity, find, (str, start)); }
@@ -348,13 +334,6 @@ public:
     StringView createView() const { return StringView(impl()); }
     StringView createView(unsigned offset, unsigned length) const { return StringView(impl(), offset, length); }
 
-    // Returns a lowercase/uppercase version of the string
-    String lower() const;
-    String upper() const;
-
-    String lower(const AtomicString& localeIdentifier) const;
-    String upper(const AtomicString& localeIdentifier) const;
-
     String stripWhiteSpace() const;
     String stripWhiteSpace(IsWhiteSpaceFunctionPtr) const;
     String simplifyWhiteSpace(StripBehavior = StripExtraWhiteSpace) const;
@@ -362,9 +341,6 @@ public:
 
     String removeCharacters(CharacterMatchFunctionPtr) const;
     template<bool isSpecialCharacter(UChar)> bool isAllSpecialCharacters() const;
-
-    // Return the string with case folded for case insensitive comparison.
-    String foldCase() const;
 
     static String format(const char *, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
 
@@ -497,25 +473,6 @@ template<size_t inlineCapacity>
 inline bool operator!=(const Vector<char, inlineCapacity>& a, const String& b) { return !(a == b); }
 template<size_t inlineCapacity>
 inline bool operator!=(const String& a, const Vector<char, inlineCapacity>& b) { return b != a; }
-
-inline bool equalIgnoringCase(const String& a, const String& b) { return equalIgnoringCase(a.impl(), b.impl()); }
-inline bool equalIgnoringCase(const String& a, const LChar* b) { return equalIgnoringCase(a.impl(), b); }
-inline bool equalIgnoringCase(const String& a, const char* b) { return equalIgnoringCase(a.impl(), reinterpret_cast<const LChar*>(b)); }
-inline bool equalIgnoringCase(const LChar* a, const String& b) { return equalIgnoringCase(a, b.impl()); }
-inline bool equalIgnoringCase(const char* a, const String& b) { return equalIgnoringCase(reinterpret_cast<const LChar*>(a), b.impl()); }
-
-inline bool equalIgnoringASCIICase(const String& a, const String& b) { return equalIgnoringASCIICase(a.impl(), b.impl()); }
-
-inline bool equalPossiblyIgnoringCase(const String& a, const String& b, bool ignoreCase)
-{
-    return ignoreCase ? equalIgnoringCase(a, b) : (a == b);
-}
-
-inline bool equalIgnoringNullity(const String& a, const String& b) { return equalIgnoringNullity(a.impl(), b.impl()); }
-
-template<size_t inlineCapacity>
-inline bool equalIgnoringNullity(const Vector<UChar, inlineCapacity>& a, const String& b) { return equalIgnoringNullity(a, b.impl()); }
-
 inline bool operator!(const String& str) { return str.isNull(); }
 
 inline void swap(String& a, String& b) { a.swap(b); }
@@ -678,9 +635,6 @@ WTF_EXPORT const String& emptyString();
 WTF_EXPORT const String& emptyString16Bit();
 WTF_EXPORT extern const String& xmlnsWithColon;
 
-// Pretty printer for gtest. Declared here to avoid ODR violations.
-WTF_UNITTEST_HELPERS_EXPORT std::ostream& operator<<(std::ostream&, const String&);
-
 } // namespace WTF
 
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String);
@@ -705,7 +659,6 @@ using WTF::charactersToUInt64;
 using WTF::charactersToDouble;
 using WTF::charactersToFloat;
 using WTF::equal;
-using WTF::equalIgnoringCase;
 using WTF::find;
 using WTF::isAllSpecialCharacters;
 using WTF::isSpaceOrNewline;

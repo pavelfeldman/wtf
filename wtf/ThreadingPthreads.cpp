@@ -32,7 +32,6 @@
 
 #if OS(POSIX)
 
-#include "wtf/DateMath.h"
 #include "wtf/HashMap.h"
 #include "wtf/OwnPtr.h"
 #include "wtf/PassOwnPtr.h"
@@ -75,7 +74,6 @@ void initializeThreading()
     atomicallyInitializedStaticMutex = new Mutex;
     wtfThreadData();
     s_dtoaP5Mutex = new Mutex;
-    initializeDates();
     // Force initialization of static DoubleToStringConverter converter variable
     // inside EcmaScriptConverter function while we are in single thread mode.
     double_conversion::DoubleToStringConverter::EcmaScriptConverter();
