@@ -29,10 +29,6 @@
 #include "wtf/Allocator.h"
 #include "wtf/Assertions.h"
 #include "wtf/PassOwnPtr.h"
-#include "wtf/PassRefPtr.h"
-#include "wtf/RefPtr.h"
-#include "wtf/ThreadSafeRefCounted.h"
-#include "wtf/WeakPtr.h"
 
 namespace WTF {
 
@@ -91,14 +87,6 @@ public:
         return (c.get()->*m_function)(params...);
     }
 
-    R operator()(const WeakPtr<C>& c, Params... params)
-    {
-        C* obj = c.get();
-        if (!obj)
-            return R();
-        return (obj->*m_function)(params...);
-    }
-
 private:
     R(C::*m_function)(Params...);
 };
@@ -108,29 +96,6 @@ template<typename T> struct ParamStorageTraits {
 
     static StorageType wrap(const T& value) { return value; }
     static const T& unwrap(const StorageType& value) { return value; }
-};
-
-template<typename T> struct ParamStorageTraits<PassRefPtr<T>> {
-    typedef RefPtr<T> StorageType;
-
-    static StorageType wrap(PassRefPtr<T> value) { return value; }
-    static T* unwrap(const StorageType& value) { return value.get(); }
-};
-
-template<typename T> struct ParamStorageTraits<RefPtr<T>> {
-    typedef RefPtr<T> StorageType;
-
-    static StorageType wrap(RefPtr<T> value) { return value.release(); }
-    static T* unwrap(const StorageType& value) { return value.get(); }
-};
-
-template<typename> class RetainPtr;
-
-template<typename T> struct ParamStorageTraits<RetainPtr<T>> {
-    typedef RetainPtr<T> StorageType;
-
-    static StorageType wrap(const RetainPtr<T>& value) { return value; }
-    static typename RetainPtr<T>::PtrType unwrap(const StorageType& value) { return value.get(); }
 };
 
 template<typename>

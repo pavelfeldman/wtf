@@ -32,33 +32,6 @@
 #include "wtf/LeakAnnotations.h"
 #include <cstddef>
 
-#if ENABLE(ASSERT)
-#include "wtf/Noncopyable.h"
-#include "wtf/Threading.h"
-
-class WTF_EXPORT StaticLocalVerifier {
-    WTF_MAKE_NONCOPYABLE(StaticLocalVerifier);
-public:
-    StaticLocalVerifier()
-        : m_safelyInitialized(WTF::isBeforeThreadCreated())
-        , m_thread(WTF::currentThread())
-    {
-    }
-
-    bool isNotRacy()
-    {
-        // Make sure that this 1) is safely initialized, 2) keeps being called
-        // on the same thread, or 3) is called within
-        // AtomicallyInitializedStatic (i.e. with a lock held).
-        return m_safelyInitialized || m_thread == WTF::currentThread() || WTF::isAtomicallyInitializedStaticMutexLockHeld();
-    }
-
-private:
-    bool m_safelyInitialized;
-    ThreadIdentifier m_thread;
-};
-#endif
-
 // A direct static local to a Blink garbage collected objects isn't allowed;
 // must be wrapped up with a persistent reference.
 #define STATIC_ASSERT_FOR_LOCAL_WITH_GARBAGE_COLLECTED_TYPE(Name, Type) \
@@ -75,17 +48,9 @@ private:
 // to static references to Oilpan heap objects and what they transitively hold on to.
 // LEAK_SANITIZER_REGISTER_STATIC_LOCAL() takes care of the details.
 //
-#if ENABLE(ASSERT)
-#define DEFINE_STATIC_LOCAL(Type, Name, Arguments)        \
-    STATIC_ASSERT_FOR_LOCAL_WITH_GARBAGE_COLLECTED_TYPE(Name, Type); \
-    static StaticLocalVerifier Name##StaticLocalVerifier; \
-    ASSERT(Name##StaticLocalVerifier.isNotRacy());        \
-    static Type& Name = *LEAK_SANITIZER_REGISTER_STATIC_LOCAL(Type, new Type Arguments)
-#else
 #define DEFINE_STATIC_LOCAL(Type, Name, Arguments) \
     STATIC_ASSERT_FOR_LOCAL_WITH_GARBAGE_COLLECTED_TYPE(Name, Type); \
     static Type& Name = *LEAK_SANITIZER_REGISTER_STATIC_LOCAL(Type, new Type Arguments)
-#endif
 
 // Use this to declare and define a static local pointer to a ref-counted object so that
 // it is leaked so that the object's destructors are not called at exit.
