@@ -37,8 +37,6 @@
 #include "wtf/text/StringBuffer.h"
 #include "wtf/text/StringHash.h"
 #include <algorithm>
-#include <unicode/translit.h>
-#include <unicode/unistr.h>
 
 #ifdef STRING_STATS
 #include "wtf/DataLog.h"

@@ -48,7 +48,6 @@ typedef void (*CompressibleStringTableDestructor)(CompressibleStringTable*);
 namespace WTF {
 
 class AtomicStringTable;
-struct ICUConverterWrapper;
 
 typedef void (*AtomicStringTableDestructor)(AtomicStringTable*);
 
@@ -69,14 +68,11 @@ public:
         return m_compressibleStringTable;
     }
 
-    ICUConverterWrapper& cachedConverterICU() { return *m_cachedConverterICU; }
-
 private:
     AtomicStringTable* m_atomicStringTable;
     AtomicStringTableDestructor m_atomicStringTableDestructor;
     blink::CompressibleStringTable* m_compressibleStringTable;
     blink::CompressibleStringTableDestructor m_compressibleStringTableDestructor;
-    OwnPtr<ICUConverterWrapper> m_cachedConverterICU;
 
     static ThreadSpecific<WTFThreadData>* staticData;
     friend WTFThreadData& wtfThreadData();

@@ -172,7 +172,6 @@
             'text/StringView.h',
             'text/TextCodec.cpp',
             'text/TextCodecASCIIFastPath.h',
-            'text/TextCodecICU.cpp',
             'text/TextCodecLatin1.cpp',
             'text/TextCodecReplacement.cpp',
             'text/TextCodecReplacement.h',
@@ -189,8 +188,6 @@
             'text/Unicode.h',
             'text/WTFString.cpp',
             'text/WTFString.h',
-            'text/icu/CollatorICU.cpp',
-            'text/icu/UnicodeIcu.h',
         ],
         'wtf_unittest_files': [
         ],

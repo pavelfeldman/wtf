@@ -36,7 +36,6 @@
 #include "wtf/StringExtras.h"
 #include "wtf/ThreadingPrimitives.h"
 #include "wtf/text/CString.h"
-#include "wtf/text/TextCodecICU.h"
 #include "wtf/text/TextCodecLatin1.h"
 #include "wtf/text/TextCodecReplacement.h"
 #include "wtf/text/TextCodecUTF16.h"
@@ -246,10 +245,6 @@ static void extendTextCodecMaps()
 {
     TextCodecReplacement::registerEncodingNames(addToTextEncodingNameMap);
     TextCodecReplacement::registerCodecs(addToTextCodecMap);
-
-    TextCodecICU::registerEncodingNames(addToTextEncodingNameMap);
-    TextCodecICU::registerCodecs(addToTextCodecMap);
-
     pruneBlacklistedCodecs();
 }
 

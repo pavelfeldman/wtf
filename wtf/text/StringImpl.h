@@ -668,7 +668,7 @@ static inline bool isSpaceOrNewline(UChar c)
 {
     // Use isASCIISpace() for basic Latin-1.
     // This will include newlines, which aren't included in Unicode DirWS.
-    return c <= 0x7F ? WTF::isASCIISpace(c) : WTF::Unicode::direction(c) == WTF::Unicode::WhiteSpaceNeutral;
+    return WTF::isASCIISpace(c);
 }
 
 inline PassRefPtr<StringImpl> StringImpl::isolatedCopy() const

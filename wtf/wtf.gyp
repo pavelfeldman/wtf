@@ -55,8 +55,6 @@
       ],
       'dependencies': [
           'wtf_config',
-          '../../icu/icu.gyp:icui18n',
-          '../../icu/icu.gyp:icuuc',
       ],
       'sources': [
         '<@(wtf_files)',
@@ -83,8 +81,6 @@
       },
       'export_dependent_settings': [
         'wtf_config',
-        '../../icu/icu.gyp:icui18n',
-        '../../icu/icu.gyp:icuuc',
       ],
       # Disable c4267 warnings until we fix size_t to int truncations.
       'msvs_disabled_warnings': [4127, 4355, 4510, 4512, 4610, 4706, 4068, 4267],
