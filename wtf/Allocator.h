@@ -6,7 +6,6 @@
 #define WTF_Allocator_h
 
 #include "wtf/Assertions.h"
-#include "wtf/Partitions.h"
 #include "wtf/StdLibExtras.h"
 
 namespace WTF {
@@ -94,41 +93,7 @@ namespace WTF {
 //    };
 //
 
-#define USING_FAST_MALLOC_INTERNAL(type, typeName) \
-public: \
-    void* operator new(size_t, void* p) { return p; } \
-    void* operator new[](size_t, void* p) { return p; } \
-    \
-    void* operator new(size_t size) \
-    { \
-        return ::WTF::Partitions::fastMalloc(size, typeName); \
-    } \
-    \
-    void operator delete(void* p) \
-    { \
-        ::WTF::Partitions::fastFree(p);         \
-    } \
-    \
-    void* operator new[](size_t size) \
-    { \
-        return ::WTF::Partitions::fastMalloc(size, typeName); \
-    } \
-    \
-    void operator delete[](void* p) \
-    { \
-        ::WTF::Partitions::fastFree(p);                   \
-    } \
-    void* operator new(size_t, NotNullTag, void* location) \
-    { \
-        ASSERT(location); \
-        return location; \
-    } \
-    static const char* classNameForAllocator() \
-    { \
-        return #type; \
-    } \
-private: \
-typedef int __thisIsHereToForceASemicolonAfterThisMacro
+#define USING_FAST_MALLOC_INTERNAL(type, typeName)
 
 // Both of these macros enable fast malloc and provide type info to the heap
 // profiler. The regular macro does not provide type info in official builds,

@@ -23,7 +23,6 @@
 #define WTF_OwnPtr_h
 
 #include "wtf/Allocator.h"
-#include "wtf/HashTableDeletedValueType.h"
 #include "wtf/Noncopyable.h"
 #include "wtf/OwnPtrCommon.h"
 #include <algorithm>
@@ -46,11 +45,6 @@ public:
     // See comment in PassOwnPtr.h for why this takes a const reference.
     OwnPtr(const PassOwnPtr<T>&);
     template <typename U> OwnPtr(const PassOwnPtr<U>&, EnsurePtrConvertibleArgDecl(U, T));
-
-    // Hash table deleted values, which are only constructed and never copied or
-    // destroyed.
-    OwnPtr(HashTableDeletedValueType) : m_ptr(hashTableDeletedValue()) {}
-    bool isHashTableDeletedValue() const { return m_ptr == hashTableDeletedValue(); }
 
     ~OwnPtr()
     {
@@ -87,8 +81,6 @@ public:
     template <typename U> OwnPtr& operator=(OwnPtr<U>&&);
 
     void swap(OwnPtr& o) { std::swap(m_ptr, o.m_ptr); }
-
-    static T* hashTableDeletedValue() { return reinterpret_cast<T*>(-1); }
 
 private:
     // We should never have two OwnPtrs for the same underlying object

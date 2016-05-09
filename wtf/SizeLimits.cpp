@@ -28,63 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "wtf/Assertions.h"
-#include "wtf/ContainerAnnotations.h"
+// #include "wtf/Assertions.h"
 #include "wtf/OwnPtr.h"
-#include "wtf/PassRefPtr.h"
-#include "wtf/RefCounted.h"
-#include "wtf/RefPtr.h"
-#include "wtf/ThreadRestrictionVerifier.h"
-#include "wtf/Vector.h"
-#include "wtf/text/AtomicString.h"
-#include "wtf/text/WTFString.h"
 
 namespace WTF {
-
-#if ENABLE(ASSERT) || ENABLE(SECURITY_ASSERT)
-// The debug/assertion version may get bigger.
-struct SameSizeAsRefCounted {
-    int a;
-#if ENABLE(SECURITY_ASSERT)
-    bool b;
-#endif
-#if ENABLE(ASSERT)
-    bool c;
-    ThreadRestrictionVerifier d;
-#endif
-};
-#else
-struct SameSizeAsRefCounted {
-    int a;
-    // Don't add anything here because this should stay small.
-};
-#endif
-template<typename T, unsigned inlineCapacity = 0>
-struct SameSizeAsVectorWithInlineCapacity;
-
-template<typename T>
-struct SameSizeAsVectorWithInlineCapacity<T, 0> {
-    void* bufferPointer;
-    unsigned capacity;
-    unsigned size;
-};
-
-template<typename T, unsigned inlineCapacity>
-struct SameSizeAsVectorWithInlineCapacity {
-    SameSizeAsVectorWithInlineCapacity<T, 0> baseCapacity;
-#if !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
-    AlignedBuffer<inlineCapacity * sizeof(T), WTF_ALIGN_OF(T)> inlineBuffer;
-#endif
-};
-
 static_assert(sizeof(OwnPtr<int>) == sizeof(int*), "OwnPtr should stay small");
-static_assert(sizeof(PassRefPtr<RefCounted<int>>) == sizeof(int*), "PassRefPtr should stay small");
-static_assert(sizeof(RefCounted<int>) == sizeof(SameSizeAsRefCounted), "RefCounted should stay small");
-static_assert(sizeof(RefPtr<RefCounted<int>>) == sizeof(int*), "RefPtr should stay small");
-static_assert(sizeof(String) == sizeof(int*), "String should stay small");
-static_assert(sizeof(AtomicString) == sizeof(String), "AtomicString should stay small");
-static_assert(sizeof(Vector<int>) == sizeof(SameSizeAsVectorWithInlineCapacity<int>), "Vector should stay small");
-static_assert(sizeof(Vector<int, 1>) == sizeof(SameSizeAsVectorWithInlineCapacity<int, 1>), "Vector should stay small");
-static_assert(sizeof(Vector<int, 2>) == sizeof(SameSizeAsVectorWithInlineCapacity<int, 2>), "Vector should stay small");
-static_assert(sizeof(Vector<int, 3>) == sizeof(SameSizeAsVectorWithInlineCapacity<int, 3>), "Vector should stay small");
 } // namespace WTF

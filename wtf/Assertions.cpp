@@ -36,8 +36,6 @@
 #include "wtf/Compiler.h"
 #include "wtf/OwnPtr.h"
 #include "wtf/PassOwnPtr.h"
-#include "wtf/ThreadSpecific.h"
-#include "wtf/Threading.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -357,8 +355,8 @@ void ScopedLogger::print(const char* format, ...)
 
 ScopedLogger*& ScopedLogger::current()
 {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<ScopedLogger*>, ref, new ThreadSpecific<ScopedLogger*>);
-    return *ref;
+    static ScopedLogger* ref;
+    return ref;
 }
 
 ScopedLogger::PrintFunctionPtr ScopedLogger::m_printFunc = vprintf_stderr_common;

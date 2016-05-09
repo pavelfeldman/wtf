@@ -27,8 +27,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {
   'includes': [
-    '../build/win/precompile.gypi',
-    '../build/features.gypi',
     'wtf.gypi',
   ],
   'targets': [
@@ -38,10 +36,6 @@
       'target_name': 'wtf_config',
       'type': 'none',
       'direct_dependent_settings': {
-        'defines': [
-          # Import features_defines from features.gypi
-          '<@(feature_defines)',
-        ],
         'conditions': [
           ['OS=="win"', {
             'defines': [
@@ -57,14 +51,11 @@
       'target_name': 'wtf',
       'type': '<(component)',
       'include_dirs': [
+        '../../../../icu-small/source/common',
         '..',
       ],
       'dependencies': [
           'wtf_config',
-          '../config.gyp:config',
-          '<(DEPTH)/base/base.gyp:base',
-          '<(DEPTH)/third_party/icu/icu.gyp:icui18n',
-          '<(DEPTH)/third_party/icu/icu.gyp:icuuc',
       ],
       'sources': [
         '<@(wtf_files)',
@@ -91,9 +82,6 @@
       },
       'export_dependent_settings': [
         'wtf_config',
-        '<(DEPTH)/base/base.gyp:base',
-        '<(DEPTH)/third_party/icu/icu.gyp:icui18n',
-        '<(DEPTH)/third_party/icu/icu.gyp:icuuc',
       ],
       # Disable c4267 warnings until we fix size_t to int truncations.
       'msvs_disabled_warnings': [4127, 4355, 4510, 4512, 4610, 4706, 4068, 4267],
